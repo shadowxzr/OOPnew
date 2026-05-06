@@ -140,63 +140,74 @@ public class DrawingShip
 
 		int x = _startPosX.Value;
 		int y = _startPosY.Value;
+		int deckCount = _entityShip.DeckCount;  // ← количество палуб (1,2,3)
 
 		using (Pen blackPen = new Pen(Color.Black, 1.5f))
 		{
-			// Корпус корабля
+			// ===== 1. КОРПУС ЛАЙНЕРА =====
 			Point[] hullPoints = new Point[]
 			{
-				new Point(x + 20, y + 50),
-				new Point(x + 0, y + 35),
-				new Point(x + 105, y + 35),
-				new Point(x + 85, y + 50)
+				 new Point(x + 20, y + 50),
+				 new Point(x + 0, y + 35),
+				 new Point(x + 105, y + 35),
+				 new Point(x + 85, y + 50)
 			};
 
-			using (SolidBrush hullBrush = new SolidBrush(Color.Gray))
+			// ← ИСПОЛЬЗУЕМ ЦВЕТ ИЗ ENTITYSHIP
+			using (SolidBrush hullBrush = new SolidBrush(_entityShip.BodyColor))
 			{
 				g.FillPolygon(hullBrush, hullPoints);
 				g.DrawPolygon(blackPen, hullPoints);
 			}
 
-			// ========== УСЛОЖНЕННАЯ ЧАСТЬ: отображение количества палуб ==========
-			if (_entityShip.DeckCount > 1)
+			// ===== 2. ПАЛУБЫ (исправленная геометрия) =====
+			using (Pen deckPen = new Pen(Color.SandyBrown, 1.5f))
 			{
-				using (Pen deckPen = new Pen(Color.SaddleBrown, 1.5f))
-				{
-					// Вторая палуба (линия на корпусе)
-					g.DrawLine(deckPen, x + 15, y + 45, x + 100, y + 45);
+				// Корпус имеет верхнюю грань от x+0 до x+105
 
-					if (_entityShip.DeckCount > 2)
-					{
-						// Третья палуба (еще одна линия)
-						g.DrawLine(deckPen, x + 20, y + 40, x + 95, y + 40);
-					}
+				// 1-я палуба (главная, почти во всю длину)
+				g.DrawLine(deckPen, x + 3, y + 47, x + 103, y + 47);
+
+				// 2-я палуба (надстройка, короче)
+				if (deckCount >= 2)
+				{
+					g.DrawLine(deckPen, x + 18, y + 42, x + 92, y + 42);
+				}
+
+				// 3-я палуба (самая верхняя, еще короче - место под каютами/бассейном)
+				if (deckCount >= 3)
+				{
+					g.DrawLine(deckPen, x + 28, y + 37, x + 80, y + 37);
 				}
 			}
 
-			// Рубка
-			Rectangle superstructure = new Rectangle(x + 35, y + 22, 40, 18);
-			using (SolidBrush superBrush = new SolidBrush(Color.DarkOliveGreen))
+			// ===== 3. БАССЕЙН (по заданию) =====
+			Rectangle pool = new Rectangle(x + 5, y + 38, 22, 12);
+			using (SolidBrush poolBrush = new SolidBrush(Color.LightBlue))
 			{
-				g.FillRectangle(superBrush, superstructure);
-				g.DrawRectangle(blackPen, superstructure);
+				g.FillRectangle(poolBrush, pool);
+				g.DrawRectangle(blackPen, pool);
 			}
 
-			// Башня
-			Rectangle turret = new Rectangle(x + 75, y + 28, 18, 10);
-			using (SolidBrush turretBrush = new SolidBrush(Color.DarkGreen))
+			// ===== 4. КАЮТЫ (надстройка) =====
+			Rectangle cabins = new Rectangle(x + 30, y + 22, 45, 16);
+			using (SolidBrush cabinsBrush = new SolidBrush(Color.White))
 			{
-				g.FillEllipse(turretBrush, turret);
-				g.DrawEllipse(blackPen, turret);
+				g.FillRectangle(cabinsBrush, cabins);
+				g.DrawRectangle(blackPen, cabins);
 			}
 
-			// Пушка
-			using (Pen gunPen = new Pen(Color.Black, 2f))
+			// Окна в каютах
+			using (SolidBrush windowBrush = new SolidBrush(Color.LightGray))
 			{
-				g.DrawLine(gunPen, x + 93, y + 33, x + 110, y + 33);
+				for (int i = 0; i < 4; i++)
+				{
+					Rectangle cabinWindow = new Rectangle(x + 35 + (i * 10), y + 26, 5, 5);
+					g.FillRectangle(windowBrush, cabinWindow);
+					g.DrawRectangle(blackPen, cabinWindow);
+				}
 			}
-
-			// Мачта
+			// ===== 6. МАЧТА И ФЛАГ =====
 			using (Pen mastPen = new Pen(Color.Brown, 2f))
 			{
 				g.DrawLine(mastPen, x + 50, y + 22, x + 50, y + 0);
@@ -205,31 +216,23 @@ public class DrawingShip
 			// Флаг
 			Point[] flagPoints = new Point[]
 			{
-				new Point(x + 50, y + 2),
-				new Point(x + 63, y + 5),
-				new Point(x + 50, y + 8)
+			new Point(x + 50, y + 2),
+			new Point(x + 65, y + 5),
+			new Point(x + 50, y + 8)
 			};
 			using (SolidBrush flagBrush = new SolidBrush(Color.Red))
 			{
 				g.FillPolygon(flagBrush, flagPoints);
 			}
 
-			// Труба
-			Rectangle chimney = new Rectangle(x + 62, y + 12, 8, 15);
-			using (SolidBrush chimneyBrush = new SolidBrush(Color.DarkGray))
-			{
-				g.FillRectangle(chimneyBrush, chimney);
-				g.DrawRectangle(blackPen, chimney);
-			}
-
-			// Иллюминаторы
-			using (SolidBrush windowBrush = new SolidBrush(Color.Yellow))
+			// ===== 7. ИЛЛЮМИНАТОРЫ (окна по борту) =====
+			using (SolidBrush illuminatorBrush = new SolidBrush(Color.Yellow))
 			{
 				int[] xPositions = { 28, 45, 62, 79 };
 				foreach (int xOffset in xPositions)
 				{
 					Rectangle window = new Rectangle(x + xOffset, y + 43, 4, 4);
-					g.FillEllipse(windowBrush, window);
+					g.FillEllipse(illuminatorBrush, window);
 					g.DrawEllipse(blackPen, window);
 				}
 			}

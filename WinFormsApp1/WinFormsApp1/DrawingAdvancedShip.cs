@@ -21,8 +21,7 @@ public class DrawingBattleship : DrawingShip
 	/// </summary>
 	public override void DrawTransport(Graphics g)
 	{
-		if (_entityShip is null || _entityShip is not EntityBattleship battleship ||
-			!_startPosX.HasValue || !_startPosY.HasValue)
+		if (_entityShip is null || !_startPosX.HasValue || !_startPosY.HasValue)
 		{
 			return;
 		}
@@ -32,79 +31,122 @@ public class DrawingBattleship : DrawingShip
 
 		using (Pen blackPen = new Pen(Color.Black, 1.5f))
 		{
-			// ========== ОПЦИОНАЛЬНЫЕ ЭЛЕМЕНТЫ (РИСУЕМ ПОД ОСНОВНОЙ КОРПУС) ==========
-
-			// 1. Ракетный отсек (ВСЕГДА ЕСТЬ) - рисуется слева от корпуса
-			using (SolidBrush rocketBrush = new SolidBrush(battleship.AdditionalColor))
+			// ========== КОРПУС КОРАБЛЯ (деревянный) ==========
+			Point[] hullPoints = new Point[]
 			{
-				// Ракетная установка
-				Rectangle rocketPod = new Rectangle(x - 15, y + 30, 15, 25);
-				g.FillRectangle(rocketBrush, rocketPod);
-				g.DrawRectangle(blackPen, rocketPod);
+				new Point(x + 15, y + 60),
+				new Point(x + 0, y + 45),
+				new Point(x + 30, y + 30),
+				new Point(x + 90, y + 30),
+				new Point(x + 115, y + 45),
+				new Point(x + 100, y + 60)
+			};
 
-				// Ракеты
-				for (int i = 0; i < 3; i++)
+			using (SolidBrush hullBrush = new SolidBrush(Color.SaddleBrown))
+			{
+				g.FillPolygon(hullBrush, hullPoints);
+				g.DrawPolygon(blackPen, hullPoints);
+			}
+
+			// ========== ПАЛУБА ==========
+			Rectangle deck = new Rectangle(x + 25, y + 35, 75, 8);
+			using (SolidBrush deckBrush = new SolidBrush(Color.Peru))
+			{
+				g.FillRectangle(deckBrush, deck);
+				g.DrawRectangle(blackPen, deck);
+			}
+
+			// ========== МАЧТА ==========
+			using (Pen mastPen = new Pen(Color.SaddleBrown, 4f))
+			{
+				g.DrawLine(mastPen, x + 55, y + 35, x + 55, y - 10);
+			}
+
+			// ========== БОЛЬШОЙ ПАРУС ==========
+			Point[] bigSailPoints = new Point[]
+			{
+				new Point(x + 55, y + 5),
+				new Point(x + 95, y + 20),
+				new Point(x + 95, y + 35),
+				new Point(x + 55, y + 35)
+			};
+			using (SolidBrush sailBrush = new SolidBrush(Color.WhiteSmoke))
+			{
+				g.FillPolygon(sailBrush, bigSailPoints);
+				g.DrawPolygon(blackPen, bigSailPoints);
+
+				// Полоски на парусе
+				using (Pen linePen = new Pen(Color.LightGray, 1f))
 				{
-					Rectangle rocket = new Rectangle(x - 12, y + 33 + i * 7, 9, 4);
-					g.FillRectangle(rocketBrush, rocket);
-					g.DrawRectangle(blackPen, rocket);
+					g.DrawLine(linePen, x + 55, y + 10, x + 92, y + 23);
+					g.DrawLine(linePen, x + 55, y + 15, x + 92, y + 28);
+					g.DrawLine(linePen, x + 55, y + 20, x + 92, y + 33);
 				}
 			}
 
-			// 2. Орудийная башня (ВСЕГДА ЕСТЬ) - рисуется справа от корпуса
-			using (SolidBrush gunBrush = new SolidBrush(battleship.AdditionalColor))
+			// ========== ВЕРХУШКА МАЧТЫ И ВЫМПЕЛ ==========
+			Point[] flagPoints = new Point[]
 			{
-				// Дополнительная башня
-				Rectangle extraTurret = new Rectangle(x + 110, y + 25, 20, 15);
-				g.FillEllipse(gunBrush, extraTurret);
-				g.DrawEllipse(blackPen, extraTurret);
+				new Point(x + 55, y - 10),
+				new Point(x + 75, y - 7),
+				new Point(x + 55, y - 4)
+			};
+			using (SolidBrush flagBrush = new SolidBrush(Color.Red))
+			{
+				g.FillPolygon(flagBrush, flagPoints);
+			}
 
-				// Длинное орудие
-				using (Pen gunPen = new Pen(Color.Black, 2.5f))
+			// ========== ОКНА КАЮТ ==========
+			using (SolidBrush windowBrush = new SolidBrush(Color.Gold))
+			{
+				for (int i = 0; i < 4; i++)
 				{
-					g.DrawLine(gunPen, x + 130, y + 32, x + 150, y + 32);
+					Rectangle window = new Rectangle(x + 30 + i * 18, y + 48, 8, 8);
+					g.FillEllipse(windowBrush, window);
+					g.DrawEllipse(blackPen, window);
 				}
+			}
 
-				// Звезда на башне
-				using (SolidBrush starBrush = new SolidBrush(Color.Yellow))
+			// ========== УСЛОЖНЕННАЯ ЧАСТЬ: отображение количества палуб ==========
+			if (_entityShip.DeckCount > 1)
+			{
+				using (Pen deckPen = new Pen(Color.DarkGoldenrod, 2f))
 				{
-					Point[] starPoints = new Point[]
+					// Вторая палуба - декоративная линия
+					g.DrawLine(deckPen, x + 20, y + 42, x + 100, y + 42);
+
+					if (_entityShip.DeckCount > 2)
 					{
-						new Point(x + 118, y + 32),
-						new Point(x + 120, y + 29),
-						new Point(x + 122, y + 32),
-						new Point(x + 125, y + 32),
-						new Point(x + 123, y + 35),
-						new Point(x + 122, y + 32)
-					};
-					g.FillPolygon(starBrush, starPoints);
+						// Третья палуба - бортик
+						g.DrawLine(deckPen, x + 15, y + 52, x + 105, y + 52);
+
+						// Дополнительные украшения
+						using (SolidBrush starBrush = new SolidBrush(Color.Gold))
+						{
+							PointF[] star = new PointF[5];
+							float centerX = x + 60;
+							float centerY = y + 52;
+							float radius = 6;
+							for (int i = 0; i < 5; i++)
+							{
+								float angle = i * 72 - 90;
+								star[i] = new PointF(
+									centerX + radius * (float)Math.Cos(angle * Math.PI / 180),
+									centerY + radius * (float)Math.Sin(angle * Math.PI / 180)
+								);
+							}
+							g.FillPolygon(starBrush, star);
+						}
+					}
 				}
 			}
 
-			// ========== СМЕЩАЕМ КООРДИНАТЫ ДЛЯ БАЗОВОЙ ЧАСТИ ==========
-			int originalX = _startPosX.Value;
-			int originalY = _startPosY.Value;
-			_startPosX = originalX + 15;
-			_startPosY = originalY - 5;
-
-			try
+			// ========== ЯКОРЬ У НОСА ==========
+			using (Pen anchorPen = new Pen(Color.DarkGray, 2f))
 			{
-				// Вызываем базовую прорисовку (с палубами!)
-				base.DrawTransport(g);
-			}
-			finally
-			{
-				// Возвращаем координаты
-				_startPosX = originalX;
-				_startPosY = originalY;
-			}
-
-			// ========== ДОПОЛНИТЕЛЬНЫЕ ЭЛЕМЕНТЫ ПОВЕРХ ==========
-
-			// Соединительная линия между ракетным отсеком и башней
-			using (Pen connectPen = new Pen(battleship.AdditionalColor, 2f))
-			{
-				g.DrawLine(connectPen, x - 5, y + 42, x + 110, y + 32);
+				g.DrawLine(anchorPen, x + 105, y + 55, x + 105, y + 65);
+				g.DrawLine(anchorPen, x + 100, y + 62, x + 110, y + 62);
+				g.DrawArc(anchorPen, x + 100, y + 62, 10, 6, 0, 180);
 			}
 		}
 	}
