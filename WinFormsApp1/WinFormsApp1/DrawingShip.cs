@@ -1,262 +1,238 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using WinFormsApp1.Entities;
 
-namespace WinFormsApp1
+namespace WinFormsApp1.Drawings;
+
+/// <summary>
+/// Класс, отвечающий за прорисовку и перемещение объекта-сущности
+/// </summary>
+public class DrawingShip
 {
+	/// <summary>
+	/// Класс-сущность (protected для доступа из наследников)
+	/// </summary>
+	protected EntityShip? _entityShip;
 
-    /// <summary>
-    /// Класс, отвечающий за прорисовку и перемещение объекта-сущности
-    /// </summary>
-    public class DrawingShip
-    {
-        /// <summary>
-        /// Класс-сущность
-        /// </summary>
-        private EntityShip? _entityShip;
+	/// <summary>
+	/// Левая координата прорисовки
+	/// </summary>
+	protected int? _startPosX;
 
-        /// <summary>
-        /// Левая координата прорисовки корабля
-        /// </summary>
-        private int? _startPosX;
+	/// <summary>
+	/// Верхняя координата прорисовки
+	/// </summary>
+	protected int? _startPosY;
 
-        /// <summary>
-        /// Верхняя координата прорисовки корабля
-        /// </summary>
-        private int? _startPosY;
+	/// <summary>
+	/// Ширина прорисовки корабля
+	/// </summary>
+	protected int _drawningShipWidth = 110;
 
-        /// <summary>
-        /// Ширина прорисовки корабля
-        /// </summary>
-        private readonly int _drawningShipWidth = 110;
+	/// <summary>
+	/// Высота прорисовки корабля
+	/// </summary>
+	protected int _drawningShipHeight = 50;
 
-        /// <summary>
-        /// Высота прорисовки корабля
-        /// </summary>
-        private readonly int _drawningShipHeight = 50;
+	/// <summary>
+	/// Левая координата прорисовки
+	/// </summary>
+	public int? PosX => _startPosX;
 
-        /// <summary>
-        /// Левая координата прорисовки корабля
-        /// </summary>
-        public int? PosX => _startPosX;
+	/// <summary>
+	/// Верхняя координата прорисовки
+	/// </summary>
+	public int? PosY => _startPosY;
 
-        /// <summary>
-        /// Верхняя координата прорисовки корабля
-        /// </summary>
-        public int? PosY => _startPosY;
+	/// <summary>
+	/// Шаг перемещения
+	/// </summary>
+	public double? ShipStep => _entityShip?.Step;
 
-        /// <summary>
-        /// Шаг перемещения
-        /// </summary>
-        public double? ShipStep => _entityShip?.Step;
+	/// <summary>
+	/// Ширина прорисовки
+	/// </summary>
+	public int DrawingShipWidth => _drawningShipWidth;
 
-        /// <summary>
-        /// Ширина прорисовки корабля
-        /// </summary>
-        public int DrawingShipWidth => _drawningShipWidth;
+	/// <summary>
+	/// Высота прорисовки
+	/// </summary>
+	public int DrawingShipHeight => _drawningShipHeight;
 
-        /// <summary>
-        /// Высота прорисовки корабля
-        /// </summary>
-        public int DrawingShipHeight => _drawningShipHeight;
+	/// <summary>
+	/// Приватный конструктор для инициализации координат
+	/// </summary>
+	private DrawingShip()
+	{
+		_startPosX = null;
+		_startPosY = null;
+	}
 
-        /// <summary>
-        /// Инициализация свойств
-        /// </summary>
-        /// <param name="speed">Скорость</param>
-        /// <param name="weight">Вес корабля</param>
-        /// <param name="bodyColor">Основной цвет</param>
-        /// <param name="deckCount">Количество палуб</param>
-        public void Init(int speed, double weight, Color bodyColor, int deckCount)
-        {
-            _entityShip = new EntityShip();
-            _entityShip.Init(speed, weight, bodyColor, deckCount);
-            _startPosX = null;
-            _startPosY = null;
-        }
+	/// <summary>
+	/// Конструктор для базового корабля
+	/// </summary>
+	public DrawingShip(int speed, double weight, Color bodyColor, int deckCount) : this()
+	{
+		_entityShip = new EntityShip(speed, weight, bodyColor, deckCount);
+	}
 
-        /// <summary>
-        /// Установка позиции
-        /// </summary>
-        /// <param name="x">Координата X</param>
-        /// <param name="y">Координата Y</param>
-        public void SetPosition(int x, int y)
-        {
-            _startPosX = x;
-            _startPosY = y;
-        }
+	/// <summary>
+	/// Конструктор для изменения размеров (для наследников)
+	/// </summary>
+	protected DrawingShip(int width, int height) : this()
+	{
+		_drawningShipWidth = width;
+		_drawningShipHeight = height;
+	}
 
-        /// <summary>
-        /// Сдвиг изображения влево
-        /// </summary>
-        public void MoveLeft()
-        {
-            if (_entityShip is null || !_startPosX.HasValue)
-            {
-                return;
-            }
+	/// <summary>
+	/// Установка позиции
+	/// </summary>
+	public void SetPosition(int x, int y)
+	{
+		_startPosX = x;
+		_startPosY = y;
+	}
 
-            _startPosX -= (int)_entityShip.Step;
-        }
+	/// <summary>
+	/// Сдвиг влево
+	/// </summary>
+	public void MoveLeft()
+	{
+		if (_entityShip is null || !_startPosX.HasValue) return;
+		_startPosX -= (int)_entityShip.Step;
+	}
 
-        /// <summary>
-        /// Сдвиг изображения вправо
-        /// </summary>
-        public void MoveRight()
-        {
-            if (_entityShip is null || !_startPosX.HasValue)
-            {
-                return;
-            }
+	/// <summary>
+	/// Сдвиг вправо
+	/// </summary>
+	public void MoveRight()
+	{
+		if (_entityShip is null || !_startPosX.HasValue) return;
+		_startPosX += (int)_entityShip.Step;
+	}
 
-            _startPosX += (int)_entityShip.Step;
-        }
+	/// <summary>
+	/// Сдвиг вверх
+	/// </summary>
+	public void MoveUp()
+	{
+		if (_entityShip is null || !_startPosY.HasValue) return;
+		_startPosY -= (int)_entityShip.Step;
+	}
 
-        /// <summary>
-        /// Сдвиг изображения вверх
-        /// </summary>
-        public void MoveUp()
-        {
-            if (_entityShip is null || !_startPosY.HasValue)
-            {
-                return;
-            }
+	/// <summary>
+	/// Сдвиг вниз
+	/// </summary>
+	public void MoveDown()
+	{
+		if (_entityShip is null || !_startPosY.HasValue) return;
+		_startPosY += (int)_entityShip.Step;
+	}
 
-            _startPosY -= (int)_entityShip.Step;
-        }
+	/// <summary>
+	/// Прорисовка объекта (виртуальный для переопределения)
+	/// </summary>
+	public virtual void DrawTransport(Graphics g)
+	{
+		if (_entityShip is null || !_startPosX.HasValue || !_startPosY.HasValue)
+		{
+			return;
+		}
 
-        /// <summary>
-        /// Сдвиг изображения вниз
-        /// </summary>
-        public void MoveDown()
-        {
-            if (_entityShip is null || !_startPosY.HasValue)
-            {
-                return;
-            }
+		int x = _startPosX.Value;
+		int y = _startPosY.Value;
 
-            _startPosY += (int)_entityShip.Step;
-        }
+		using (Pen blackPen = new Pen(Color.Black, 1.5f))
+		{
+			// Корпус корабля
+			Point[] hullPoints = new Point[]
+			{
+				new Point(x + 20, y + 50),
+				new Point(x + 0, y + 35),
+				new Point(x + 105, y + 35),
+				new Point(x + 85, y + 50)
+			};
 
-        /// <summary>
-        /// Прорисовка объекта
-        /// </summary>
-        /// <param name="g"></param>
-        /// <summary>
-        /// Прорисовка объекта
-        /// </summary>
-        /// <param name="g"></param>
-        /// <summary>
-        /// Прорисовка ЛАЙНЕРА (Вариант 25)
-        /// </summary>
-        public void DrawTransport(Graphics g)
-        {
-            if (_entityShip is null || !_startPosX.HasValue || !_startPosY.HasValue)
-            {
-                return;
-            }
+			using (SolidBrush hullBrush = new SolidBrush(Color.Gray))
+			{
+				g.FillPolygon(hullBrush, hullPoints);
+				g.DrawPolygon(blackPen, hullPoints);
+			}
 
-            int x = _startPosX.Value;
-            int y = _startPosY.Value;
-            int deckCount = _entityShip.DeckCount;  // ← количество палуб (1,2,3)
+			// ========== УСЛОЖНЕННАЯ ЧАСТЬ: отображение количества палуб ==========
+			if (_entityShip.DeckCount > 1)
+			{
+				using (Pen deckPen = new Pen(Color.SaddleBrown, 1.5f))
+				{
+					// Вторая палуба (линия на корпусе)
+					g.DrawLine(deckPen, x + 15, y + 45, x + 100, y + 45);
 
-            using (Pen blackPen = new Pen(Color.Black, 1.5f))
-            {
-                // ===== 1. КОРПУС ЛАЙНЕРА =====
-                Point[] hullPoints = new Point[]
-                {
-                 new Point(x + 20, y + 50),
-                 new Point(x + 0, y + 35),
-                 new Point(x + 105, y + 35),
-                 new Point(x + 85, y + 50)
-                };
+					if (_entityShip.DeckCount > 2)
+					{
+						// Третья палуба (еще одна линия)
+						g.DrawLine(deckPen, x + 20, y + 40, x + 95, y + 40);
+					}
+				}
+			}
 
-                // ← ИСПОЛЬЗУЕМ ЦВЕТ ИЗ ENTITYSHIP
-                using (SolidBrush hullBrush = new SolidBrush(_entityShip.BodyColor))
-                {
-                    g.FillPolygon(hullBrush, hullPoints);
-                    g.DrawPolygon(blackPen, hullPoints);
-                }
+			// Рубка
+			Rectangle superstructure = new Rectangle(x + 35, y + 22, 40, 18);
+			using (SolidBrush superBrush = new SolidBrush(Color.DarkOliveGreen))
+			{
+				g.FillRectangle(superBrush, superstructure);
+				g.DrawRectangle(blackPen, superstructure);
+			}
 
-                // ===== 2. ПАЛУБЫ (исправленная геометрия) =====
-                using (Pen deckPen = new Pen(Color.SandyBrown, 1.5f))
-                {
-                    // Корпус имеет верхнюю грань от x+0 до x+105
+			// Башня
+			Rectangle turret = new Rectangle(x + 75, y + 28, 18, 10);
+			using (SolidBrush turretBrush = new SolidBrush(Color.DarkGreen))
+			{
+				g.FillEllipse(turretBrush, turret);
+				g.DrawEllipse(blackPen, turret);
+			}
 
-                    // 1-я палуба (главная, почти во всю длину)
-                    g.DrawLine(deckPen, x + 3, y + 47, x + 103, y + 47);
+			// Пушка
+			using (Pen gunPen = new Pen(Color.Black, 2f))
+			{
+				g.DrawLine(gunPen, x + 93, y + 33, x + 110, y + 33);
+			}
 
-                    // 2-я палуба (надстройка, короче)
-                    if (deckCount >= 2)
-                    {
-                        g.DrawLine(deckPen, x + 18, y + 42, x + 92, y + 42);
-                    }
+			// Мачта
+			using (Pen mastPen = new Pen(Color.Brown, 2f))
+			{
+				g.DrawLine(mastPen, x + 50, y + 22, x + 50, y + 0);
+			}
 
-                    // 3-я палуба (самая верхняя, еще короче - место под каютами/бассейном)
-                    if (deckCount >= 3)
-                    {
-                        g.DrawLine(deckPen, x + 28, y + 37, x + 80, y + 37);
-                    }
-                }
+			// Флаг
+			Point[] flagPoints = new Point[]
+			{
+				new Point(x + 50, y + 2),
+				new Point(x + 63, y + 5),
+				new Point(x + 50, y + 8)
+			};
+			using (SolidBrush flagBrush = new SolidBrush(Color.Red))
+			{
+				g.FillPolygon(flagBrush, flagPoints);
+			}
 
-                // ===== 3. БАССЕЙН (по заданию) =====
-                Rectangle pool = new Rectangle(x + 5, y + 38, 22, 12);
-                using (SolidBrush poolBrush = new SolidBrush(Color.LightBlue))
-                {
-                    g.FillRectangle(poolBrush, pool);
-                    g.DrawRectangle(blackPen, pool);
-                }
+			// Труба
+			Rectangle chimney = new Rectangle(x + 62, y + 12, 8, 15);
+			using (SolidBrush chimneyBrush = new SolidBrush(Color.DarkGray))
+			{
+				g.FillRectangle(chimneyBrush, chimney);
+				g.DrawRectangle(blackPen, chimney);
+			}
 
-                // ===== 4. КАЮТЫ (надстройка) =====
-                Rectangle cabins = new Rectangle(x + 30, y + 22, 45, 16);
-                using (SolidBrush cabinsBrush = new SolidBrush(Color.White))
-                {
-                    g.FillRectangle(cabinsBrush, cabins);
-                    g.DrawRectangle(blackPen, cabins);
-                }
-
-                // Окна в каютах
-                using (SolidBrush windowBrush = new SolidBrush(Color.LightGray))
-                {
-                    for (int i = 0; i < 4; i++)
-                    {
-                        Rectangle cabinWindow = new Rectangle(x + 35 + (i * 10), y + 26, 5, 5);
-                        g.FillRectangle(windowBrush, cabinWindow);
-                        g.DrawRectangle(blackPen, cabinWindow);
-                    }
-                }
-                // ===== 6. МАЧТА И ФЛАГ =====
-                using (Pen mastPen = new Pen(Color.Brown, 2f))
-                {
-                    g.DrawLine(mastPen, x + 50, y + 22, x + 50, y + 0);
-                }
-
-                // Флаг
-                Point[] flagPoints = new Point[]
-                {
-            new Point(x + 50, y + 2),
-            new Point(x + 65, y + 5),
-            new Point(x + 50, y + 8)
-                };
-                using (SolidBrush flagBrush = new SolidBrush(Color.Red))
-                {
-                    g.FillPolygon(flagBrush, flagPoints);
-                }
-
-                // ===== 7. ИЛЛЮМИНАТОРЫ (окна по борту) =====
-                using (SolidBrush illuminatorBrush = new SolidBrush(Color.Yellow))
-                {
-                    int[] xPositions = { 28, 45, 62, 79 };
-                    foreach (int xOffset in xPositions)
-                    {
-                        Rectangle window = new Rectangle(x + xOffset, y + 43, 4, 4);
-                        g.FillEllipse(illuminatorBrush, window);
-                        g.DrawEllipse(blackPen, window);
-                    }
-                }
-            }
-        }
-    }
+			// Иллюминаторы
+			using (SolidBrush windowBrush = new SolidBrush(Color.Yellow))
+			{
+				int[] xPositions = { 28, 45, 62, 79 };
+				foreach (int xOffset in xPositions)
+				{
+					Rectangle window = new Rectangle(x + xOffset, y + 43, 4, 4);
+					g.FillEllipse(windowBrush, window);
+					g.DrawEllipse(blackPen, window);
+				}
+			}
+		}
+	}
 }

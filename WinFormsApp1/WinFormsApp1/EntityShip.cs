@@ -1,26 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace WinFormsApp1.Entities;
 
-namespace WinFormsApp1
+/// <summary>
+/// Класс-сущность "Корабль" (базовый)
+/// </summary>
+public class EntityShip
 {
-    public class EntityShip
-    {
-        public int Speed { get; private set; }
-        public double Weight { get; private set; }
-        public Color BodyColor { get; private set; }
-        public int DeckCount { get; private set; }
+	/// <summary>
+	/// Скорость
+	/// </summary>
+	public int Speed { get; init; }
 
-        public double Step => Speed * 100 / Weight;
+	/// <summary>
+	/// Вес
+	/// </summary>
+	public double Weight { get; init; }
 
-        public void Init(int speed, double weight, Color bodyColor, int deckCount)
-        {
-            Speed = speed;
-            Weight = weight;
-            BodyColor = bodyColor;
-            DeckCount = deckCount;
-        }
-    }
+	/// <summary>
+	/// Основной цвет
+	/// </summary>
+	public Color BodyColor { get; init; }
+
+	/// <summary>
+	/// Количество палуб (для усложненной части)
+	/// </summary>
+	public int DeckCount { get; init; }
+
+	/// <summary>
+	/// Шаг перемещения корабля
+	/// </summary>
+	public double Step => Speed * 100 / Weight;
+
+	/// <summary>
+	/// Конструктор для инициализации полей
+	/// </summary>
+	public EntityShip(int speed, double weight, Color bodyColor, int deckCount)
+	{
+		Speed = speed;
+		Weight = weight;
+		BodyColor = bodyColor;
+		DeckCount = deckCount;
+	}
 }

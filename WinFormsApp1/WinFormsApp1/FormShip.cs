@@ -1,117 +1,174 @@
-namespace WinFormsApp1
+using WinFormsApp1.Drawings;
+using WinFormsApp1.MovementStrategy;
+
+namespace WinFormsApp1;
+
+public partial class FormShip : Form
 {
-    public partial class FormShip : Form
-    {
-        /// <summary>
-        /// Поле-объект полотно
-        /// </summary>
-        private readonly CanvasForShip _canvas;
+	private readonly CanvasForShip _canvas;
+	private DirectionType _checkBordersState;
+	private BaseTemplateMovement? _templateMovement;
 
-        /// <summary>
-        /// Поле для фиксации состояния для следующего шага проверки выхода за границы
-        /// </summary>
-        private DirectionType _checkBordersState;
+	public FormShip()
+	{
+		InitializeComponent();
+		_canvas = new CanvasForShip();
+		_canvas.SetPictureSize(pictureBoxShip.Width, pictureBoxShip.Height);
+		_checkBordersState = DirectionType.None;
 
-        /// <summary>
-        /// Инициализация формы
-        /// </summary>
-        public FormShip()
-        {
-            InitializeComponent();
-            _canvas = new CanvasForShip();
-            _canvas.SetPictureSize(pictureBoxShip.Width, pictureBoxShip.Height);
-            _checkBordersState = DirectionType.None;
-        }
+		comboBoxDestination.Items.Clear();
+		comboBoxDestination.Items.Add("К центру");
+		comboBoxDestination.Items.Add("К правому нижнему углу");
+		comboBoxDestination.DropDownStyle = ComboBoxStyle.DropDownList;
+		comboBoxDestination.Enabled = false;
 
-        /// <summary>
-        /// Метод прорисовки корабля
-        /// </summary>
-        private void Draw() => pictureBoxShip.Image = _canvas.DrawCanvas();
+		this.Resize += FormShip_Resize;
+	}
 
-        /// <summary>
-        /// Обработка нажатия кнопки "Создать"
-        /// </summary>
-        private void ButtonCreateShip_Click(object sender, EventArgs e)
-        {
-            Random random = new();
-            DrawingShip ship = new();
+	private void FormShip_Resize(object? sender, EventArgs e)
+	{
+		if (_canvas != null && pictureBoxShip != null)
+		{
+			_canvas.SetPictureSize(pictureBoxShip.Width, pictureBoxShip.Height);
+			Draw();
+		}
+	}
 
-            // Случайные характеристики
-            int speed = random.Next(100, 300);
-            double weight = random.Next(1000, 3000);
-            Color bodyColor = Color.FromArgb(random.Next(0, 256), random.Next(0, 256), random.Next(0, 256));
-            int deckCount = random.Next(1, 4); // Количество палуб: 1, 2, 3
+	private void Draw()
+	{
+		var oldImage = pictureBoxShip.Image;
+		pictureBoxShip.Image = _canvas.DrawCanvas();
+		oldImage?.Dispose();
+	}
 
-            ship.Init(speed, weight, bodyColor, deckCount);
+	/// <summary>
+	/// Создание простого корабля (с палубами)
+	/// </summary>
+	private void ButtonCreateShip_Click(object sender, EventArgs e)
+	{
+		Random random = new();
 
-            if (_canvas.InsertShip(ship))
-            {
-                _canvas.SetShipPosition(random.Next(10, 100), random.Next(10, 100));
-                Draw();
+		int speed = random.Next(100, 300);
+		double weight = random.Next(1000, 3000);
+		Color bodyColor = Color.FromArgb(random.Next(0, 256), random.Next(0, 256), random.Next(0, 256));
+		int deckCount = random.Next(1, 4);
 
-                Text = $"Корабль - Скорость: {speed}, Вес: {weight}, Палубы: {deckCount}";
-            }
-        }
+		DrawingShip ship = new DrawingShip(speed, weight, bodyColor, deckCount);
 
-        /// <summary>
-        /// Перемещение объекта по форме (нажатие кнопок навигации)
-        /// </summary>
-        private void ButtonMove_Click(object sender, EventArgs e)
-        {
-            string name = ((Button)sender)?.Name ?? string.Empty;
-            DirectionType direction = DirectionType.None;
+		if (_canvas.InsertShip(ship))
+		{
+			_canvas.SetShipPosition(random.Next(10, 100), random.Next(10, 100));
+			comboBoxDestination.Enabled = true;
+			comboBoxDestination.SelectedIndex = -1;
+			_templateMovement = null;
+			Draw();
 
-            switch (name)
-            {
-                case "buttonUp":
-                    direction = DirectionType.Up;
-                    break;
-                case "buttonDown":
-                    direction = DirectionType.Down;
-                    break;
-                case "buttonLeft":
-                    direction = DirectionType.Left;
-                    break;
-                case "buttonRight":
-                    direction = DirectionType.Right;
-                    break;
-            }
+			Text = $"Корабль - Скорость: {speed}, Вес: {weight}, Палубы: {deckCount}";
+		}
+	}
 
-            if (_canvas.MoveTransport(direction))
-            {
-                Draw();
-            }
-        }
+	/// <summary>
+	/// Создание линкора (продвинутого объекта)
+	/// </summary>
+	private void ButtonCreateBattleship_Click(object sender, EventArgs e)
+	{
+		Random random = new();
 
-        /// <summary>
-        /// Проверка, что объект не выходит за границы при неверно заданных координатах
-        /// </summary>
-        private void ButtonCheckBorders_Click(object sender, EventArgs e)
-        {
-            Random random = new();
+		int speed = random.Next(100, 300);
+		double weight = random.Next(1000, 3000);
+		Color bodyColor = Color.FromArgb(random.Next(0, 256), random.Next(0, 256), random.Next(0, 256));
+		Color additionalColor = Color.FromArgb(random.Next(0, 256), random.Next(0, 256), random.Next(0, 256));
+		int deckCount = random.Next(1, 4);
 
-            switch (_checkBordersState)
-            {
-                case DirectionType.None:
-                case DirectionType.Down:
-                    _canvas.SetShipPosition(random.Next(10, 100) - 1000, random.Next(10, 100));
-                    _checkBordersState = DirectionType.Left;
-                    break;
-                case DirectionType.Left:
-                    _canvas.SetShipPosition(random.Next(10, 100), random.Next(10, 100) - 1000);
-                    _checkBordersState = DirectionType.Up;
-                    break;
-                case DirectionType.Up:
-                    _canvas.SetShipPosition(random.Next(10, 100) + pictureBoxShip.Width, random.Next(10, 100));
-                    _checkBordersState = DirectionType.Right;
-                    break;
-                case DirectionType.Right:
-                    _canvas.SetShipPosition(random.Next(10, 100), random.Next(10, 100) + pictureBoxShip.Height);
-                    _checkBordersState = DirectionType.Down;
-                    break;
-            }
+		DrawingBattleship battleship = new DrawingBattleship(speed, weight, bodyColor, deckCount, additionalColor);
 
-            Draw();
-        }
-    }
+		if (_canvas.InsertShip(battleship))
+		{
+			_canvas.SetShipPosition(random.Next(10, 100), random.Next(10, 100));
+			comboBoxDestination.Enabled = true;
+			comboBoxDestination.SelectedIndex = -1;
+			_templateMovement = null;
+			Draw();
+
+			Text = $"ЛИНКОР - Скорость: {speed}, Вес: {weight}, " +
+				   $"Палубы: {deckCount}, Доп.цвет: RGB({additionalColor.R},{additionalColor.G},{additionalColor.B})";
+		}
+	}
+
+	private void ButtonMove_Click(object sender, EventArgs e)
+	{
+		string name = ((Button)sender)?.Name ?? string.Empty;
+		DirectionType direction = DirectionType.None;
+
+		switch (name)
+		{
+			case "buttonUp": direction = DirectionType.Up; break;
+			case "buttonDown": direction = DirectionType.Down; break;
+			case "buttonLeft": direction = DirectionType.Left; break;
+			case "buttonRight": direction = DirectionType.Right; break;
+		}
+
+		if (_canvas.MoveTransport(direction))
+		{
+			Draw();
+		}
+	}
+
+	private void ButtonCheckBorders_Click(object sender, EventArgs e)
+	{
+		Random random = new();
+
+		switch (_checkBordersState)
+		{
+			case DirectionType.None:
+			case DirectionType.Down:
+				_canvas.SetShipPosition(random.Next(10, 100) - 1000, random.Next(10, 100));
+				_checkBordersState = DirectionType.Left;
+				break;
+			case DirectionType.Left:
+				_canvas.SetShipPosition(random.Next(10, 100), random.Next(10, 100) - 1000);
+				_checkBordersState = DirectionType.Up;
+				break;
+			case DirectionType.Up:
+				_canvas.SetShipPosition(random.Next(10, 100) + pictureBoxShip.Width, random.Next(10, 100));
+				_checkBordersState = DirectionType.Right;
+				break;
+			case DirectionType.Right:
+				_canvas.SetShipPosition(random.Next(10, 100), random.Next(10, 100) + pictureBoxShip.Height);
+				_checkBordersState = DirectionType.Down;
+				break;
+		}
+		Draw();
+	}
+
+	private void ComboBoxDestination_SelectedIndexChanged(object sender, EventArgs e)
+	{
+		if (_canvas is null || _canvas.DrawingShip is null) return;
+
+		_templateMovement = comboBoxDestination.SelectedIndex switch
+		{
+			0 => new MoveToCenter(),
+			1 => new MoveToRightDownBorder(),
+			_ => null
+		};
+
+		if (_templateMovement is null) return;
+
+		_templateMovement.SetData(new MoveableAdapterShip(_canvas.DrawingShip),
+			pictureBoxShip.Width, pictureBoxShip.Height);
+		comboBoxDestination.Enabled = false;
+	}
+
+	private void ButtonMovementStep_Click(object sender, EventArgs e)
+	{
+		if (_templateMovement is null) return;
+
+		_templateMovement.MakeStep();
+		if (_templateMovement.IsFinishReached)
+		{
+			comboBoxDestination.Enabled = true;
+			comboBoxDestination.SelectedIndex = -1;
+		}
+		Draw();
+	}
 }

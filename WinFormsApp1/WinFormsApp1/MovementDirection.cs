@@ -1,9 +1,9 @@
-﻿namespace WinFormsApp1.Drawings;
+﻿namespace WinFormsApp1.MovementStrategy;
 
 /// <summary>
 /// Направление перемещения
 /// </summary>
-public enum DirectionType
+public enum MovementDirection
 {
 	None = 0,
 	Up = 1,
