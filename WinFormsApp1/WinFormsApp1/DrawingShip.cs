@@ -236,6 +236,7 @@ public class DrawingShip
 					g.DrawEllipse(blackPen, window);
 				}
 			}
+
 		}
 	}
 }

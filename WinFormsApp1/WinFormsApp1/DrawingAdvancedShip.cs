@@ -7,13 +7,16 @@ namespace WinFormsApp1.Drawings;
 /// </summary>
 public class DrawingBattleship : DrawingShip
 {
+	private EntityBattleship? _battleship;
+
 	/// <summary>
 	/// Конструктор линкора (оба признака всегда true)
 	/// </summary>
 	public DrawingBattleship(int speed, double weight, Color bodyColor, int deckCount, Color additionalColor)
-		: base(130, 65)  // Линкор чуть больше (ширина 130, высота 65)
+		: base(140, 70)  // Линкор чуть больше (ширина 140, высота 70)
 	{
 		_entityShip = new EntityBattleship(speed, weight, bodyColor, deckCount, additionalColor);
+		_battleship = _entityShip as EntityBattleship;
 	}
 
 	/// <summary>
@@ -21,132 +24,117 @@ public class DrawingBattleship : DrawingShip
 	/// </summary>
 	public override void DrawTransport(Graphics g)
 	{
-		if (_entityShip is null || !_startPosX.HasValue || !_startPosY.HasValue)
+		if (_battleship is null || !_startPosX.HasValue || !_startPosY.HasValue)
 		{
 			return;
 		}
 
 		int x = _startPosX.Value;
 		int y = _startPosY.Value;
+		int deckCount = _battleship.DeckCount;
 
 		using (Pen blackPen = new Pen(Color.Black, 1.5f))
 		{
-			// ========== КОРПУС КОРАБЛЯ (деревянный) ==========
+			// ===== 1. КОРПУС ЛАЙНЕРА =====
 			Point[] hullPoints = new Point[]
 			{
-				new Point(x + 15, y + 60),
-				new Point(x + 0, y + 45),
-				new Point(x + 30, y + 30),
-				new Point(x + 90, y + 30),
-				new Point(x + 115, y + 45),
-				new Point(x + 100, y + 60)
+				new Point(x + 25, y + 55),
+				new Point(x + 0, y + 38),
+				new Point(x + 120, y + 38),
+				new Point(x + 100, y + 55)
 			};
 
-			using (SolidBrush hullBrush = new SolidBrush(Color.SaddleBrown))
+			using (SolidBrush hullBrush = new SolidBrush(_battleship.BodyColor))
 			{
 				g.FillPolygon(hullBrush, hullPoints);
 				g.DrawPolygon(blackPen, hullPoints);
 			}
 
-			// ========== ПАЛУБА ==========
-			Rectangle deck = new Rectangle(x + 25, y + 35, 75, 8);
-			using (SolidBrush deckBrush = new SolidBrush(Color.Peru))
+			// ===== 2. ПАЛУБЫ =====
+			using (Pen deckPen = new Pen(Color.SandyBrown, 1.5f))
 			{
-				g.FillRectangle(deckBrush, deck);
-				g.DrawRectangle(blackPen, deck);
-			}
+				g.DrawLine(deckPen, x + 5, y + 52, x + 118, y + 52);
 
-			// ========== МАЧТА ==========
-			using (Pen mastPen = new Pen(Color.SaddleBrown, 4f))
-			{
-				g.DrawLine(mastPen, x + 55, y + 35, x + 55, y - 10);
-			}
-
-			// ========== БОЛЬШОЙ ПАРУС ==========
-			Point[] bigSailPoints = new Point[]
-			{
-				new Point(x + 55, y + 5),
-				new Point(x + 95, y + 20),
-				new Point(x + 95, y + 35),
-				new Point(x + 55, y + 35)
-			};
-			using (SolidBrush sailBrush = new SolidBrush(Color.WhiteSmoke))
-			{
-				g.FillPolygon(sailBrush, bigSailPoints);
-				g.DrawPolygon(blackPen, bigSailPoints);
-
-				// Полоски на парусе
-				using (Pen linePen = new Pen(Color.LightGray, 1f))
+				if (deckCount >= 2)
 				{
-					g.DrawLine(linePen, x + 55, y + 10, x + 92, y + 23);
-					g.DrawLine(linePen, x + 55, y + 15, x + 92, y + 28);
-					g.DrawLine(linePen, x + 55, y + 20, x + 92, y + 33);
+					g.DrawLine(deckPen, x + 20, y + 46, x + 105, y + 46);
+				}
+
+				if (deckCount >= 3)
+				{
+					g.DrawLine(deckPen, x + 30, y + 40, x + 90, y + 40);
 				}
 			}
 
-			// ========== ВЕРХУШКА МАЧТЫ И ВЫМПЕЛ ==========
+			// ===== 3. БАССЕЙН (с использованием AdditionalColor для воды) =====
+			Rectangle pool = new Rectangle(x + 8, y + 41, 24, 12);
+			using (SolidBrush poolBrush = new SolidBrush(_battleship.AdditionalColor))
+			{
+				g.FillRectangle(poolBrush, pool);
+				g.DrawRectangle(blackPen, pool);
+			}
+
+			// ===== 4. КАЮТЫ (надстройка) =====
+			Rectangle cabins = new Rectangle(x + 35, y + 22, 50, 18);
+			using (SolidBrush cabinsBrush = new SolidBrush(Color.White))
+			{
+				g.FillRectangle(cabinsBrush, cabins);
+				g.DrawRectangle(blackPen, cabins);
+			}
+
+			// Окна в каютах
+			using (SolidBrush windowBrush = new SolidBrush(Color.LightGray))
+			{
+				for (int i = 0; i < 5; i++)
+				{
+					Rectangle cabinWindow = new Rectangle(x + 42 + (i * 9), y + 27, 5, 5);
+					g.FillRectangle(windowBrush, cabinWindow);
+					g.DrawRectangle(blackPen, cabinWindow);
+				}
+			}
+
+			// ===== 5. МАЧТА И ФЛАГ =====
+			using (Pen mastPen = new Pen(Color.Brown, 2f))
+			{
+				g.DrawLine(mastPen, x + 58, y + 22, x + 58, y + 0);
+			}
+
+			// Флаг (используем AdditionalColor для флага)
 			Point[] flagPoints = new Point[]
 			{
-				new Point(x + 55, y - 10),
-				new Point(x + 75, y - 7),
-				new Point(x + 55, y - 4)
+				new Point(x + 58, y + 2),
+				new Point(x + 78, y + 5),
+				new Point(x + 58, y + 8)
 			};
-			using (SolidBrush flagBrush = new SolidBrush(Color.Red))
+			using (SolidBrush flagBrush = new SolidBrush(_battleship.AdditionalColor))
 			{
 				g.FillPolygon(flagBrush, flagPoints);
 			}
 
-			// ========== ОКНА КАЮТ ==========
-			using (SolidBrush windowBrush = new SolidBrush(Color.Gold))
+			// ===== 6. ИЛЛЮМИНАТОРЫ =====
+			using (SolidBrush illuminatorBrush = new SolidBrush(Color.Yellow))
 			{
-				for (int i = 0; i < 4; i++)
+				int[] xPositions = { 30, 48, 66, 84, 102 };
+				foreach (int xOffset in xPositions)
 				{
-					Rectangle window = new Rectangle(x + 30 + i * 18, y + 48, 8, 8);
-					g.FillEllipse(windowBrush, window);
+					Rectangle window = new Rectangle(x + xOffset, y + 48, 4, 4);
+					g.FillEllipse(illuminatorBrush, window);
 					g.DrawEllipse(blackPen, window);
 				}
 			}
 
-			// ========== УСЛОЖНЕННАЯ ЧАСТЬ: отображение количества палуб ==========
-			if (_entityShip.DeckCount > 1)
+			// ===== 7. ДЫМОХОД (с использованием AdditionalColor) =====
+			Rectangle chimney = new Rectangle(x + 75, y + 5, 14, 18);
+			using (SolidBrush chimneyBrush = new SolidBrush(_battleship.AdditionalColor))
 			{
-				using (Pen deckPen = new Pen(Color.DarkGoldenrod, 2f))
-				{
-					// Вторая палуба - декоративная линия
-					g.DrawLine(deckPen, x + 20, y + 42, x + 100, y + 42);
-
-					if (_entityShip.DeckCount > 2)
-					{
-						// Третья палуба - бортик
-						g.DrawLine(deckPen, x + 15, y + 52, x + 105, y + 52);
-
-						// Дополнительные украшения
-						using (SolidBrush starBrush = new SolidBrush(Color.Gold))
-						{
-							PointF[] star = new PointF[5];
-							float centerX = x + 60;
-							float centerY = y + 52;
-							float radius = 6;
-							for (int i = 0; i < 5; i++)
-							{
-								float angle = i * 72 - 90;
-								star[i] = new PointF(
-									centerX + radius * (float)Math.Cos(angle * Math.PI / 180),
-									centerY + radius * (float)Math.Sin(angle * Math.PI / 180)
-								);
-							}
-							g.FillPolygon(starBrush, star);
-						}
-					}
-				}
+				g.FillRectangle(chimneyBrush, chimney);
+				g.DrawRectangle(blackPen, chimney);
 			}
 
-			// ========== ЯКОРЬ У НОСА ==========
-			using (Pen anchorPen = new Pen(Color.DarkGray, 2f))
+			// ===== 8. ДЕКОРАТИВНАЯ ПОЛОСА (бонус от AdditionalColor) =====
+			using (Pen decorPen = new Pen(_battleship.AdditionalColor, 2f))
 			{
-				g.DrawLine(anchorPen, x + 105, y + 55, x + 105, y + 65);
-				g.DrawLine(anchorPen, x + 100, y + 62, x + 110, y + 62);
-				g.DrawArc(anchorPen, x + 100, y + 62, 10, 6, 0, 180);
+				g.DrawLine(decorPen, x + 10, y + 58, x + 115, y + 58);
 			}
 		}
 	}
