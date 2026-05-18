@@ -25,15 +25,14 @@ public class EntityShip
 	/// </summary>
 	public int DeckCount { get; init; }
 
-	/// <summary>
-	/// Шаг перемещения корабля
-	/// </summary>
-	public double Step => Speed * 100 / Weight;
-
-	/// <summary>
-	/// Конструктор для инициализации полей
-	/// </summary>
-	public EntityShip(int speed, double weight, Color bodyColor, int deckCount)
+    /// <summary>
+    /// Шаг перемещения корабля
+    /// </summary>
+    public double Step => Math.Min(Speed * 100 / Weight, 20); // Максимальный шаг 20 пикселей
+    /// <summary>
+    /// Конструктор для инициализации полей
+    /// </summary>
+    public EntityShip(int speed, double weight, Color bodyColor, int deckCount)
 	{
 		Speed = speed;
 		Weight = weight;

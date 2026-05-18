@@ -9,7 +9,29 @@ public partial class FormShip : Form
 	private DirectionType _checkBordersState;
 	private BaseTemplateMovement? _templateMovement;
 
-	public FormShip()
+    /// <summary>
+    /// Получение корабля из коллекции (для передачи из формы коллекции)
+    /// </summary>
+    public void SetDrawingShip(DrawingShip ship) => InsertShipObject(ship);
+
+    /// <summary>
+    /// Добавление на полотно корабля
+    /// </summary>
+    private void InsertShipObject(DrawingShip ship, Random? random = null)
+    {
+        random ??= new();
+        if (_canvas.InsertShip(ship))
+        {
+            _canvas.SetShipPosition(random.Next(10, 100), random.Next(10, 100));
+            comboBoxDestination.Enabled = true;
+            comboBoxDestination.SelectedIndex = -1;
+            _templateMovement = null;
+            Draw();
+            Text = $"Получен корабль из коллекции - {ship.GetType().Name}";
+        }
+    }
+
+    public FormShip()
 	{
 		InitializeComponent();
 		_canvas = new CanvasForShip();
@@ -67,35 +89,35 @@ public partial class FormShip : Form
 		}
 	}
 
-	/// <summary>
-	/// Создание линкора (продвинутого объекта)
-	/// </summary>
-	private void ButtonCreateBattleship_Click(object sender, EventArgs e)
-	{
-		Random random = new();
+    /// <summary>
+    /// Создание лайнера (продвинутого объекта)
+    /// </summary>
+    private void ButtonCreateBattleship_Click(object sender, EventArgs e)
+    {
+        Random random = new();
 
-		int speed = random.Next(100, 300);
-		double weight = random.Next(1000, 3000);
-		Color bodyColor = Color.FromArgb(random.Next(0, 256), random.Next(0, 256), random.Next(0, 256));
-		Color additionalColor = Color.FromArgb(random.Next(0, 256), random.Next(0, 256), random.Next(0, 256));
-		int deckCount = random.Next(1, 4);
+        int speed = random.Next(300, 600);
+        double weight = random.Next(2000, 6000);
+        Color bodyColor = Color.FromArgb(random.Next(0, 256), random.Next(0, 256), random.Next(0, 256));
+        Color additionalColor = Color.FromArgb(random.Next(0, 256), random.Next(0, 256), random.Next(0, 256));
+        int deckCount = random.Next(2, 5);
 
-		DrawingBattleship battleship = new DrawingBattleship(speed, weight, bodyColor, deckCount, additionalColor);
+        DrawingLiner liner = new DrawingLiner(speed, weight, bodyColor, deckCount, additionalColor);
 
-		if (_canvas.InsertShip(battleship))
-		{
-			_canvas.SetShipPosition(random.Next(10, 100), random.Next(10, 100));
-			comboBoxDestination.Enabled = true;
-			comboBoxDestination.SelectedIndex = -1;
-			_templateMovement = null;
-			Draw();
+        if (_canvas.InsertShip(liner))
+        {
+            _canvas.SetShipPosition(random.Next(10, 100), random.Next(10, 100));
+            comboBoxDestination.Enabled = true;
+            comboBoxDestination.SelectedIndex = -1;
+            _templateMovement = null;
+            Draw();
 
-			Text = $"ЛИНКОР - Скорость: {speed}, Вес: {weight}, " +
-				   $"Палубы: {deckCount}, Доп.цвет: RGB({additionalColor.R},{additionalColor.G},{additionalColor.B})";
-		}
-	}
+            Text = $"ЛАЙНЕР - Скорость: {speed}, Вес: {weight}, " +
+                   $"Палубы: {deckCount}, Доп.цвет: RGB({additionalColor.R},{additionalColor.G},{additionalColor.B})";
+        }
+    }
 
-	private void ButtonMove_Click(object sender, EventArgs e)
+    private void ButtonMove_Click(object sender, EventArgs e)
 	{
 		string name = ((Button)sender)?.Name ?? string.Empty;
 		DirectionType direction = DirectionType.None;

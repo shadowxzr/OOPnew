@@ -1,41 +1,44 @@
-﻿namespace WinFormsApp1.MovementStrategy;
+﻿using WinFormsApp1.Drawings;
+
+namespace WinFormsApp1.MovementStrategy;
 
 /// <summary>
-/// Цель перемещения объекта в правый нижний угол
+/// Стратегия перемещения объекта к правой нижней границе экрана
 /// </summary>
 public class MoveToRightDownBorder : BaseTemplateMovement
 {
-	protected override bool IsTargetDestination()
-	{
-		ObjectCoordinates? objParams = GetObjectCoordinates();
-		if (objParams is null) return false;
+    protected override bool IsTargetDestination()
+    {
+        ObjectCoordinates? objParams = GetObjectCoordinates();
+        if (objParams is null) return false;
 
-		int? step = GetStep();
-		if (step is null) return false;
+        // Достигли ли правой И нижней границы
+        return objParams.RightBorder >= FieldWidth && objParams.DownBorder >= FieldHeight;
+    }
 
-		return Math.Abs(objParams.RightBorder - FieldWidth) <= step.Value &&
-			   Math.Abs(objParams.DownBorder - FieldHeight) <= step.Value;
-	}
+    protected override void MoveToTarget()
+    {
+        ObjectCoordinates? objParams = GetObjectCoordinates();
+        if (objParams is null) return;
 
-	protected override void MoveToTarget()
-	{
-		ObjectCoordinates? objParams = GetObjectCoordinates();
-		int? step = GetStep();
+        bool needMoveRight = objParams.RightBorder < FieldWidth;
+        bool needMoveDown = objParams.DownBorder < FieldHeight;
 
-		if (objParams is null || step is null) return;
-
-		int diffRight = objParams.RightBorder - FieldWidth;
-		if (Math.Abs(diffRight) > step.Value)
-		{
-			if (diffRight > 0) MoveLeft();
-			else MoveRight();
-		}
-
-		int diffDown = objParams.DownBorder - FieldHeight;
-		if (Math.Abs(diffDown) > step.Value)
-		{
-			if (diffDown > 0) MoveUp();
-			else MoveDown();
-		}
-	}
+        // Движение по диагонали: одновременно вправо и вниз
+        if (needMoveRight && needMoveDown)
+        {
+            MoveRight();
+            MoveDown();
+        }
+        // Если только вправо нужно
+        else if (needMoveRight)
+        {
+            MoveRight();
+        }
+        // Если только вниз нужно
+        else if (needMoveDown)
+        {
+            MoveDown();
+        }
+    }
 }
