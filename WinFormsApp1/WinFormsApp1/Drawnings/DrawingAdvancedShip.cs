@@ -130,12 +130,6 @@ public class DrawingBattleship : DrawingShip
 				g.FillRectangle(chimneyBrush, chimney);
 				g.DrawRectangle(blackPen, chimney);
 			}
-
-			// ===== 8. ДЕКОРАТИВНАЯ ПОЛОСА (бонус от AdditionalColor) =====
-			using (Pen decorPen = new Pen(_battleship.AdditionalColor, 2f))
-			{
-				g.DrawLine(decorPen, x + 10, y + 58, x + 115, y + 58);
-			}
 		}
 	}
 }
