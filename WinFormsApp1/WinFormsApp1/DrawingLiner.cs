@@ -94,6 +94,7 @@ public class DrawingLiner : DrawingShip
         // ===== 5. ДВЕ МАЧТЫ И ДВА ФЛАГА =====
         using Pen mastPen = new(Color.Brown, 2f);
         g.DrawLine(mastPen, x + 40, y + 22, x + 40, y + 0);
+        g.DrawLine(mastPen, x + 80, y + 22, x + 80, y + 0);
 
         Point[] flagPoints1 = new Point[]
         {
@@ -104,6 +105,17 @@ public class DrawingLiner : DrawingShip
         using (SolidBrush flagBrush1 = new SolidBrush(Color.Red))
         {
             g.FillPolygon(flagBrush1, flagPoints1);
+        }
+
+        Point[] flagPoints2 = new Point[]
+        {
+            new Point(x + 80, y + 2),
+            new Point(x + 100, y + 5),
+            new Point(x + 80, y + 8)
+        };
+        using (SolidBrush flagBrush2 = new SolidBrush(Color.Blue))
+        {
+            g.FillPolygon(flagBrush2, flagPoints2);
         }
 
         // ===== 6. ИЛЛЮМИНАТОРЫ (6 штук) =====
@@ -123,5 +135,10 @@ public class DrawingLiner : DrawingShip
             g.FillRectangle(chimneyBrush, chimney);
             g.DrawRectangle(blackPen, chimney);
         }
+
+        // ===== 8. НАЗВАНИЕ =====
+        using Font font = new("Arial", 5, FontStyle.Bold);
+        using SolidBrush nameBrush = new SolidBrush(Color.Black);
+        g.DrawString("LINER", font, nameBrush, x + 45, y + 46);
     }
 }
