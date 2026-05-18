@@ -2,9 +2,6 @@
 
 namespace WinFormsApp1.MovementStrategy;
 
-/// <summary>
-/// Класс-шаблон стратегии перемещения объекта
-/// </summary>
 public abstract class BaseTemplateMovement
 {
     private IMoveableObject? _moveableObject;
@@ -45,11 +42,6 @@ public abstract class BaseTemplateMovement
 
     protected ObjectCoordinates? GetObjectCoordinates() => _moveableObject?.ObjectCoordinates;
     protected int? GetStep() => _moveableObject?.ObjectStep;
-
-    /// <summary>
-    /// Точная установка позиции объекта (для дотягивания до границы)
-    /// </summary>
-    protected void SnapToPosition(int x, int y) => _moveableObject?.SetObjectPosition(x, y);
 
     protected abstract void MoveToTarget();
     protected abstract bool IsTargetDestination();

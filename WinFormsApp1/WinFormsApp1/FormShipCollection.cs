@@ -51,10 +51,8 @@ public partial class FormShipCollection : Form
                 break;
 
             case nameof(DrawingLiner):
-                // Скорость лайнера: от 800 до 1500 (было 250-500)
-                speed = random.Next(800, 1500);
-                // Вес лайнера: от 2000 до 8000 (было 5000-15000) - чтобы шаг был больше
-                weight = random.Next(2000, 8000);
+                speed = random.Next(150, 250);      // скорость 150-250
+                weight = random.Next(3000, 6000);   // вес 3000-6000 (шаг 2.5-8.3)
                 bodyColor = GetColor(random);
                 Color additionalColor = GetColor(random);
                 deckCount = random.Next(2, 5);

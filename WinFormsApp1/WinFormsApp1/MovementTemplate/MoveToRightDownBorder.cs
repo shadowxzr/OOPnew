@@ -24,18 +24,16 @@ public class MoveToRightDownBorder : BaseTemplateMovement
         bool needMoveRight = objParams.RightBorder < FieldWidth;
         bool needMoveDown = objParams.DownBorder < FieldHeight;
 
-        // Движение по диагонали: одновременно вправо и вниз
+        // Диагональное движение: оба направления одновременно
         if (needMoveRight && needMoveDown)
         {
             MoveRight();
             MoveDown();
         }
-        // Если только вправо нужно
         else if (needMoveRight)
         {
             MoveRight();
         }
-        // Если только вниз нужно
         else if (needMoveDown)
         {
             MoveDown();

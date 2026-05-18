@@ -9,6 +9,9 @@ public class CanvasForShip
     private int? _canvasWidth;
     private int? _canvasHeight;
 
+    /// <summary>
+    /// Свойство для доступа к прорисовываемому объекту (для адаптера)
+    /// </summary>
     public DrawingShip? DrawingShip => _drawningShip;
 
     public void SetPictureSize(int width, int height)
@@ -72,41 +75,32 @@ public class CanvasForShip
         {
             case DirectionType.Left:
                 if (currentX - step >= 0)
+                {
                     _drawningShip.MoveLeft();
-                else if (currentX > 0)
-                    _drawningShip.SetPosition(0, currentY);
-                else
-                    return false;
-                return true;
-
+                    return true;
+                }
+                break;
             case DirectionType.Up:
                 if (currentY - step >= 0)
+                {
                     _drawningShip.MoveUp();
-                else if (currentY > 0)
-                    _drawningShip.SetPosition(currentX, 0);
-                else
-                    return false;
-                return true;
-
+                    return true;
+                }
+                break;
             case DirectionType.Right:
-                int maxRight = _canvasWidth.Value - shipWidth;
-                if (currentX + step <= maxRight)
+                if (currentX + step + shipWidth <= _canvasWidth.Value)
+                {
                     _drawningShip.MoveRight();
-                else if (currentX < maxRight)
-                    _drawningShip.SetPosition(maxRight, currentY);
-                else
-                    return false;
-                return true;
-
+                    return true;
+                }
+                break;
             case DirectionType.Down:
-                int maxDown = _canvasHeight.Value - shipHeight;
-                if (currentY + step <= maxDown)
+                if (currentY + step + shipHeight <= _canvasHeight.Value)
+                {
                     _drawningShip.MoveDown();
-                else if (currentY < maxDown)
-                    _drawningShip.SetPosition(currentX, maxDown);
-                else
-                    return false;
-                return true;
+                    return true;
+                }
+                break;
         }
         return false;
     }

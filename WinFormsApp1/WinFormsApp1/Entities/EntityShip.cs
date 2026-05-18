@@ -5,38 +5,39 @@
 /// </summary>
 public class EntityShip
 {
-	/// <summary>
-	/// Скорость
-	/// </summary>
-	public int Speed { get; init; }
-
-	/// <summary>
-	/// Вес
-	/// </summary>
-	public double Weight { get; init; }
-
-	/// <summary>
-	/// Основной цвет
-	/// </summary>
-	public Color BodyColor { get; init; }
-
-	/// <summary>
-	/// Количество палуб (для усложненной части)
-	/// </summary>
-	public int DeckCount { get; init; }
+    /// <summary>
+    /// Скорость
+    /// </summary>
+    public int Speed { get; init; }
 
     /// <summary>
-    /// Шаг перемещения корабля
+    /// Вес
     /// </summary>
-    public double Step => Math.Min(Speed * 100 / Weight, 20); // Максимальный шаг 20 пикселей
+    public double Weight { get; init; }
+
+    /// <summary>
+    /// Основной цвет
+    /// </summary>
+    public Color BodyColor { get; init; }
+
+    /// <summary>
+    /// Количество палуб
+    /// </summary>
+    public int DeckCount { get; init; }
+
+    /// <summary>
+    /// Шаг перемещения корабля (ограничен максимальным значением 10)
+    /// </summary>
+    public double Step => Math.Min(Speed * 100 / Weight, 10);
+
     /// <summary>
     /// Конструктор для инициализации полей
     /// </summary>
     public EntityShip(int speed, double weight, Color bodyColor, int deckCount)
-	{
-		Speed = speed;
-		Weight = weight;
-		BodyColor = bodyColor;
-		DeckCount = deckCount;
-	}
+    {
+        Speed = speed;
+        Weight = weight;
+        BodyColor = bodyColor;
+        DeckCount = deckCount;
+    }
 }

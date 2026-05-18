@@ -4,14 +4,13 @@ namespace WinFormsApp1.Drawings;
 
 /// <summary>
 /// Класс прорисовки Лайнера (продвинутый объект для варианта 25)
-/// Отличается от обычного корабля: две трубы, два флага, название на борту
 /// </summary>
 public class DrawingLiner : DrawingShip
 {
     private EntityLiner? _liner;
 
     public DrawingLiner(int speed, double weight, Color bodyColor, int deckCount, Color additionalColor)
-        : base(110, 60)
+        : base(110, 50)  // Те же размеры, что у обычного корабля
     {
         _entityShip = new EntityLiner(speed, weight, bodyColor, deckCount, additionalColor);
         _liner = _entityShip as EntityLiner;
@@ -28,7 +27,7 @@ public class DrawingLiner : DrawingShip
 
         using Pen blackPen = new(Color.Black, 1.5f);
 
-        // ===== 1. КОРПУС (как у обычного корабля) =====
+        // ===== 1. КОРПУС =====
         Point[] hullPoints = new Point[]
         {
             new Point(x + 20, y + 50),
@@ -65,58 +64,64 @@ public class DrawingLiner : DrawingShip
             g.DrawRectangle(blackPen, pool);
         }
 
-        // ===== 4. КАЮТЫ (такие же) =====
-        Rectangle cabins = new(x + 30, y + 22, 45, 16);
+        // ===== 4. КАЮТЫ (двухэтажные) =====
+        Rectangle cabinsLower = new(x + 30, y + 28, 45, 10);
+        Rectangle cabinsUpper = new(x + 38, y + 22, 30, 8);
+
         using (SolidBrush cabinsBrush = new SolidBrush(Color.White))
         {
-            g.FillRectangle(cabinsBrush, cabins);
-            g.DrawRectangle(blackPen, cabins);
+            g.FillRectangle(cabinsBrush, cabinsLower);
+            g.DrawRectangle(blackPen, cabinsLower);
+            g.FillRectangle(cabinsBrush, cabinsUpper);
+            g.DrawRectangle(blackPen, cabinsUpper);
         }
 
         // Окна в каютах
         using SolidBrush windowBrush = new(Color.LightGray);
         for (int i = 0; i < 4; i++)
         {
-            Rectangle cabinWindow = new(x + 35 + (i * 10), y + 26, 5, 5);
+            Rectangle cabinWindow = new(x + 35 + (i * 10), y + 31, 4, 4);
+            g.FillRectangle(windowBrush, cabinWindow);
+            g.DrawRectangle(blackPen, cabinWindow);
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            Rectangle cabinWindow = new(x + 43 + (i * 9), y + 24, 3, 4);
             g.FillRectangle(windowBrush, cabinWindow);
             g.DrawRectangle(blackPen, cabinWindow);
         }
 
-        // ===== 5. ДВЕ МАЧТЫ И ДВА ФЛАГА (отличие) =====
+        // ===== 5. ДВЕ МАЧТЫ И ДВА ФЛАГА =====
         using Pen mastPen = new(Color.Brown, 2f);
-        // Мачта 1 (носовая)
-        g.DrawLine(mastPen, x + 35, y + 22, x + 35, y + 0);
-        // Мачта 2 (кормовая)
-        g.DrawLine(mastPen, x + 75, y + 22, x + 75, y + 0);
+        g.DrawLine(mastPen, x + 40, y + 22, x + 40, y + 0);
 
-        // Флаг на первой мачте
         Point[] flagPoints1 = new Point[]
         {
-            new Point(x + 35, y + 2),
-            new Point(x + 55, y + 5),
-            new Point(x + 35, y + 8)
+            new Point(x + 40, y + 2),
+            new Point(x + 60, y + 5),
+            new Point(x + 40, y + 8)
         };
         using (SolidBrush flagBrush1 = new SolidBrush(Color.Red))
         {
             g.FillPolygon(flagBrush1, flagPoints1);
         }
 
-        // ===== 6. ТРУБА (сдвинута назад) =====
-        Rectangle chimney = new(x + 55, y + 5, 14, 17);
-        using (SolidBrush chimneyBrush = new SolidBrush(Color.DarkGray))
-        {
-            g.FillRectangle(chimneyBrush, chimney);
-            g.DrawRectangle(blackPen, chimney);
-        }
-
-        // ===== 7. ИЛЛЮМИНАТОРЫ (больше, чем у обычного) =====
+        // ===== 6. ИЛЛЮМИНАТОРЫ (6 штук) =====
         using SolidBrush illuminatorBrush = new(Color.Yellow);
         int[] xPositions = { 28, 45, 62, 79, 96 };
         foreach (int xOffset in xPositions)
         {
-            Rectangle window = new(x + xOffset, y + 43, 4, 4);
+            Rectangle window = new(x + xOffset, y + 43, 3, 3);
             g.FillEllipse(illuminatorBrush, window);
             g.DrawEllipse(blackPen, window);
+        }
+
+        // ===== 7. ТРУБА =====
+        Rectangle chimney = new(x + 60, y + 5, 12, 17);
+        using (SolidBrush chimneyBrush = new SolidBrush(Color.DarkGray))
+        {
+            g.FillRectangle(chimneyBrush, chimney);
+            g.DrawRectangle(blackPen, chimney);
         }
     }
 }
