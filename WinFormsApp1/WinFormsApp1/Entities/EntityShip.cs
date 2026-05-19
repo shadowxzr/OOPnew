@@ -1,38 +1,13 @@
 ﻿namespace WinFormsApp1.Entities;
 
-/// <summary>
-/// Класс-сущность "Корабль" (базовый)
-/// </summary>
 public class EntityShip
 {
-    /// <summary>
-    /// Скорость
-    /// </summary>
     public int Speed { get; init; }
-
-    /// <summary>
-    /// Вес
-    /// </summary>
     public double Weight { get; init; }
-
-    /// <summary>
-    /// Основной цвет
-    /// </summary>
     public Color BodyColor { get; init; }
-
-    /// <summary>
-    /// Количество палуб
-    /// </summary>
     public int DeckCount { get; init; }
+    public double Step => Math.Min(Speed * 100 / Weight, 15);
 
-    /// <summary>
-    /// Шаг перемещения корабля (ограничен максимальным значением 10)
-    /// </summary>
-    public double Step => Math.Min(Speed * 100 / Weight, 10);
-
-    /// <summary>
-    /// Конструктор для инициализации полей
-    /// </summary>
     public EntityShip(int speed, double weight, Color bodyColor, int deckCount)
     {
         Speed = speed;

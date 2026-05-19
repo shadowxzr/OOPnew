@@ -9,9 +9,6 @@ public class CanvasForShip
     private int? _canvasWidth;
     private int? _canvasHeight;
 
-    /// <summary>
-    /// Свойство для доступа к прорисовываемому объекту (для адаптера)
-    /// </summary>
     public DrawingShip? DrawingShip => _drawningShip;
 
     public void SetPictureSize(int width, int height)
