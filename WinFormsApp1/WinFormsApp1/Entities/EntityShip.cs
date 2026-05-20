@@ -28,7 +28,7 @@ public class EntityShip
 	/// <summary>
 	/// Шаг перемещения корабля
 	/// </summary>
-	public double Step => Speed * 100 / Weight;
+	public double Step => 10;
 
 	/// <summary>
 	/// Конструктор для инициализации полей

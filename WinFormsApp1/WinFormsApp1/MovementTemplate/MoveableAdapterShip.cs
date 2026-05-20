@@ -1,4 +1,5 @@
-﻿using WinFormsApp1.Drawings;
+﻿
+using WinFormsApp1.Drawings;
 
 namespace WinFormsApp1.MovementStrategy;
 
