@@ -181,14 +181,6 @@ public class DrawingShip
 				}
 			}
 
-			// ===== 3. БАССЕЙН (по заданию) =====
-			Rectangle pool = new Rectangle(x + 5, y + 38, 22, 12);
-			using (SolidBrush poolBrush = new SolidBrush(Color.LightBlue))
-			{
-				g.FillRectangle(poolBrush, pool);
-				g.DrawRectangle(blackPen, pool);
-			}
-
 			// ===== 4. КАЮТЫ (надстройка) =====
 			Rectangle cabins = new Rectangle(x + 30, y + 22, 45, 16);
 			using (SolidBrush cabinsBrush = new SolidBrush(Color.White))

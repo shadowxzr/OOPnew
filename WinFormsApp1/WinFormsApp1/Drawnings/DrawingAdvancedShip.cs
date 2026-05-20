@@ -13,7 +13,7 @@ public class DrawingBattleship : DrawingShip
 	/// Конструктор линкора (оба признака всегда true)
 	/// </summary>
 	public DrawingBattleship(int speed, double weight, Color bodyColor, int deckCount, Color additionalColor)
-		: base(110, 50)  // Линкор чуть больше (ширина 140, высота 70)
+		: base(110, 50)  
 	{
 		_entityShip = new EntityBattleship(speed, weight, bodyColor, deckCount, additionalColor);
 		_battleship = _entityShip as EntityBattleship;
@@ -37,6 +37,14 @@ public class DrawingBattleship : DrawingShip
 
 		using (Pen blackPen = new Pen(Color.Black, 1.5f))
 		{
+			// ===== 3. БАССЕЙН 
+			Rectangle pool = new Rectangle(x + 5, y + 38, 22, 12);
+			using (SolidBrush poolBrush = new SolidBrush(Color.LightBlue))
+			{
+				g.FillRectangle(poolBrush, pool);
+				g.DrawRectangle(blackPen, pool);
+			}
+
 			// ===== 7. ДЫМОХОД (с использованием AdditionalColor) =====
 			Rectangle chimney = new Rectangle(x + 75, y + 5, 14, 18);
 			using (SolidBrush chimneyBrush = new SolidBrush(_battleship.AdditionalColor))
