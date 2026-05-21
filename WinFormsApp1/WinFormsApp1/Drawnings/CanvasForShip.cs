@@ -9,6 +9,9 @@ public class CanvasForShip
     private int? _canvasWidth;
     private int? _canvasHeight;
 
+    /// <summary>
+    /// Свойство для доступа к прорисовываемому объекту (для адаптера)
+    /// </summary>
     public DrawingShip? DrawingShip => _drawningShip;
 
     public void SetPictureSize(int width, int height)
@@ -37,18 +40,16 @@ public class CanvasForShip
 
         int newX = x;
         int newY = y;
-        int shipWidth = _drawningShip.DrawingShipWidth;
-        int shipHeight = _drawningShip.DrawingShipHeight;
 
         if (newX < 0)
             newX = 0;
-        else if (newX + shipWidth > _canvasWidth.Value)
-            newX = _canvasWidth.Value - shipWidth;
+        else if (newX + _drawningShip.DrawingShipWidth > _canvasWidth.Value)
+            newX = _canvasWidth.Value - _drawningShip.DrawingShipWidth;
 
         if (newY < 0)
             newY = 0;
-        else if (newY + shipHeight > _canvasHeight.Value)
-            newY = _canvasHeight.Value - shipHeight;
+        else if (newY + _drawningShip.DrawingShipHeight > _canvasHeight.Value)
+            newY = _canvasHeight.Value - _drawningShip.DrawingShipHeight;
 
         _drawningShip.SetPosition(newX, newY);
     }
@@ -65,8 +66,6 @@ public class CanvasForShip
         int currentX = _drawningShip.PosX.Value;
         int currentY = _drawningShip.PosY.Value;
         int step = (int)_drawningShip.ShipStep.Value;
-        int shipWidth = _drawningShip.DrawingShipWidth;
-        int shipHeight = _drawningShip.DrawingShipHeight;
 
         switch (direction)
         {
@@ -85,14 +84,14 @@ public class CanvasForShip
                 }
                 break;
             case DirectionType.Right:
-                if (currentX + step + shipWidth <= _canvasWidth.Value)
+                if (currentX + step + _drawningShip.DrawingShipWidth <= _canvasWidth.Value)
                 {
                     _drawningShip.MoveRight();
                     return true;
                 }
                 break;
             case DirectionType.Down:
-                if (currentY + step + shipHeight <= _canvasHeight.Value)
+                if (currentY + step + _drawningShip.DrawingShipHeight <= _canvasHeight.Value)
                 {
                     _drawningShip.MoveDown();
                     return true;

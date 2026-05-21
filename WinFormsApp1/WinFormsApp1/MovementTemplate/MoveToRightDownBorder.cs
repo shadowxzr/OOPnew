@@ -1,9 +1,7 @@
-﻿using WinFormsApp1.Drawings;
-
-namespace WinFormsApp1.MovementStrategy;
+﻿namespace WinFormsApp1.MovementStrategy;
 
 /// <summary>
-/// Стратегия перемещения объекта к правому нижнему углу экрана
+/// Цель перемещения объекта в правый нижний угол
 /// </summary>
 public class MoveToRightDownBorder : BaseTemplateMovement
 {
@@ -12,57 +10,32 @@ public class MoveToRightDownBorder : BaseTemplateMovement
         ObjectCoordinates? objParams = GetObjectCoordinates();
         if (objParams is null) return false;
 
-        int step = 10; // константный шаг
+        int? step = GetStep();
+        if (step is null) return false;
 
-        int targetRight = FieldWidth;
-        int targetDown = FieldHeight;
-
-        int diffRight = targetRight - objParams.RightBorder;
-        int diffDown = targetDown - objParams.DownBorder;
-
-        // Достигли границы (осталось меньше или равно шагу)
-        return diffRight <= step && diffDown <= step;
+        return Math.Abs(objParams.RightBorder - FieldWidth) <= step.Value &&
+               Math.Abs(objParams.DownBorder - FieldHeight) <= step.Value;
     }
 
     protected override void MoveToTarget()
     {
         ObjectCoordinates? objParams = GetObjectCoordinates();
-        if (objParams is null) return;
+        int? step = GetStep();
 
-        int step = 10; // константный шаг
+        if (objParams is null || step is null) return;
 
-        int targetRight = FieldWidth;
-        int targetDown = FieldHeight;
-
-        int diffRight = targetRight - objParams.RightBorder;
-        int diffDown = targetDown - objParams.DownBorder;
-
-        // Движение вправо
-        if (diffRight > step)
+        int diffRight = objParams.RightBorder - FieldWidth;
+        if (Math.Abs(diffRight) > step.Value)
         {
-            MoveRight();
-        }
-        else if (diffRight > 0)
-        {
-            // Точная подгонка до правой границы
-            MoveRight();
+            if (diffRight > 0) MoveLeft();
+            else MoveRight();
         }
 
-        // Обновляем координаты после движения вправо
-        objParams = GetObjectCoordinates();
-        if (objParams is null) return;
-
-        diffDown = targetDown - objParams.DownBorder;
-
-        // Движение вниз
-        if (diffDown > step)
+        int diffDown = objParams.DownBorder - FieldHeight;
+        if (Math.Abs(diffDown) > step.Value)
         {
-            MoveDown();
-        }
-        else if (diffDown > 0)
-        {
-            // Точная подгонка до нижней границы
-            MoveDown();
+            if (diffDown > 0) MoveUp();
+            else MoveDown();
         }
     }
 }
