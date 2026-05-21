@@ -6,7 +6,7 @@ public class EntityShip
     public double Weight { get; init; }
     public Color BodyColor { get; init; }
     public int DeckCount { get; init; }
-    public double Step => Math.Min(Speed * 100 / Weight, 15);
+    public double Step => 10;
 
     public EntityShip(int speed, double weight, Color bodyColor, int deckCount)
     {

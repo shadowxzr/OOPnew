@@ -103,13 +103,6 @@ public class DrawingShip
                 }
             }
 
-            Rectangle pool = new Rectangle(x + 5, y + 38, 22, 12);
-            using (SolidBrush poolBrush = new SolidBrush(Color.LightBlue))
-            {
-                g.FillRectangle(poolBrush, pool);
-                g.DrawRectangle(blackPen, pool);
-            }
-
             Rectangle cabins = new Rectangle(x + 30, y + 22, 45, 16);
             using (SolidBrush cabinsBrush = new SolidBrush(Color.White))
             {

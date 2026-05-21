@@ -1,41 +1,80 @@
-﻿namespace WinFormsApp1.MovementStrategy;
+﻿using WinFormsApp1.Drawings;
+
+namespace WinFormsApp1.MovementStrategy;
 
 /// <summary>
-/// Цель перемещения объекта в центр экрана
+/// Стратегия перемещения объекта к центру экрана
 /// </summary>
 public class MoveToCenter : BaseTemplateMovement
 {
-	protected override bool IsTargetDestination()
-	{
-		ObjectCoordinates? objParams = GetObjectCoordinates();
-		if (objParams is null) return false;
+    protected override bool IsTargetDestination()
+    {
+        ObjectCoordinates? objParams = GetObjectCoordinates();
+        if (objParams is null) return false;
 
-		int? step = GetStep();
-		if (step is null) return false;
+        int step = 10; // константный шаг
 
-		return Math.Abs(objParams.ObjectMiddleHorizontal - FieldWidth / 2) <= step.Value &&
-			   Math.Abs(objParams.ObjectMiddleVertical - FieldHeight / 2) <= step.Value;
-	}
+        int targetX = FieldWidth / 2;
+        int targetY = FieldHeight / 2;
 
-	protected override void MoveToTarget()
-	{
-		ObjectCoordinates? objParams = GetObjectCoordinates();
-		int? step = GetStep();
+        int diffX = Math.Abs(objParams.ObjectMiddleHorizontal - targetX);
+        int diffY = Math.Abs(objParams.ObjectMiddleVertical - targetY);
 
-		if (objParams is null || step is null) return;
+        // Достигли центра (осталось меньше или равно шагу)
+        return diffX <= step && diffY <= step;
+    }
 
-		int diffX = objParams.ObjectMiddleHorizontal - FieldWidth / 2;
-		if (Math.Abs(diffX) > step.Value)
-		{
-			if (diffX > 0) MoveLeft();
-			else MoveRight();
-		}
+    protected override void MoveToTarget()
+    {
+        ObjectCoordinates? objParams = GetObjectCoordinates();
+        if (objParams is null) return;
 
-		int diffY = objParams.ObjectMiddleVertical - FieldHeight / 2;
-		if (Math.Abs(diffY) > step.Value)
-		{
-			if (diffY > 0) MoveUp();
-			else MoveDown();
-		}
-	}
+        int step = 10; // константный шаг
+
+        int targetX = FieldWidth / 2;
+        int targetY = FieldHeight / 2;
+
+        int diffX = objParams.ObjectMiddleHorizontal - targetX;
+        int diffY = objParams.ObjectMiddleVertical - targetY;
+
+        // Движение по горизонтали
+        if (Math.Abs(diffX) > step)
+        {
+            if (diffX > 0)
+                MoveLeft();
+            else
+                MoveRight();
+        }
+        else if (diffX != 0)
+        {
+            // Точная подгонка по X
+            if (diffX > 0)
+                MoveLeft();
+            else
+                MoveRight();
+        }
+
+        // Обновляем координаты после движения по X
+        objParams = GetObjectCoordinates();
+        if (objParams is null) return;
+
+        diffY = objParams.ObjectMiddleVertical - targetY;
+
+        // Движение по вертикали
+        if (Math.Abs(diffY) > step)
+        {
+            if (diffY > 0)
+                MoveUp();
+            else
+                MoveDown();
+        }
+        else if (diffY != 0)
+        {
+            // Точная подгонка по Y
+            if (diffY > 0)
+                MoveUp();
+            else
+                MoveDown();
+        }
+    }
 }
