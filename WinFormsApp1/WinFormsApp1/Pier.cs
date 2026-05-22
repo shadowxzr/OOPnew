@@ -20,19 +20,15 @@ public class Pier : AbstractCompany
 
     protected override void DrawBackground(Graphics g)
     {
-        // белый фон
         g.Clear(Color.White);
 
-        // черная сетка
         using Pen pen = new(Color.Black, 1);
 
-        // вертикальные линии
         for (int i = 0; i <= _colsCount; i++)
         {
             g.DrawLine(pen, i * _placeSizeWidth, 0, i * _placeSizeWidth, _pictureHeight);
         }
 
-        // горизонтальные линии
         for (int i = 0; i <= _rowsCount; i++)
         {
             g.DrawLine(pen, 0, i * _placeSizeHeight, _pictureWidth, i * _placeSizeHeight);
@@ -41,29 +37,49 @@ public class Pier : AbstractCompany
 
     protected override void DrawObjects(Graphics g)
     {
-        // проходим по всем возможным позициям в сетке
         int maxItems = _colsCount * _rowsCount;
 
         for (int i = 0; i < maxItems; i++)
         {
-            // получаем объект по индексу i (индекс в коллекции соответствует позиции в сетке)
             DrawingShip? ship = _collection.GetObject(i);
             if (ship is null)
                 continue;
 
-            // расчет позиции в сетке с направлением "влево, вниз"
             int col = i % _colsCount;
             int row = i / _colsCount;
 
-            // влево: колонка инвертируется (справа налево)
+            // направление "влево" — инвертируем колонку
             int invertedCol = _colsCount - 1 - col;
 
             int x = invertedCol * _placeSizeWidth;
             int y = row * _placeSizeHeight;
 
-            // установка позиции и прорисовка корабля
             ship.SetPosition(x, y);
             ship.DrawTransport(g);
         }
+    }
+
+    /// <summary>
+    /// Получение объекта из коллекции по позиции
+    /// </summary>
+    public DrawingShip? GetObjectAtPosition(int position)
+    {
+        return _collection.GetObject(position);
+    }
+
+    /// <summary>
+    /// Добавление объекта в коллекцию (через перегруженный оператор)
+    /// </summary>
+    public bool AddShip(DrawingShip ship)
+    {
+        return this + ship;
+    }
+
+    /// <summary>
+    /// Удаление объекта из коллекции (через перегруженный оператор)
+    /// </summary>
+    public bool RemoveShip(int position)
+    {
+        return this - position;
     }
 }
