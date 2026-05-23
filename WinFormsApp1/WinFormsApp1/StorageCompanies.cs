@@ -5,6 +5,8 @@ namespace WinFormsApp1.CollectionGenericObjects;
 /// <summary>
 /// Класс-хранилище компаний (Пристаней)
 /// </summary>
+
+//0
 public class StorageCompanies
 {
     /// <summary>
